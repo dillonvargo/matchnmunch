@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Match & Munch - Interactive Preview</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f8f8;
+            color: #333;
+        }
+        header {
+            background-color: #ff6b6b;
+            color: white;
+            text-align: center;
+            padding: 2rem 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        h1 {
+            margin: 0;
+            font-size: 2.5rem;
+        }
+        .tagline {
+            font-style: italic;
+            margin-top: 0.5rem;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        .phone-container {
+            width: 375px;
+            height: 667px;
+            margin: 0 auto;
+            border: 10px solid #333;
+            border-radius: 30px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+        .screen {
+            width: 100%;
+            height: 100%;
+            background-color: white;
+            overflow: hidden;
+            position: absolute;
+            transition: transform 0.5s ease;
+        }
+        .screen-header {
+            background-color: #ff6b6b;
+            color: white;
+            padding: 1rem;
+            text-align: center;
+            font-weight: bold;
+            position: relative;
+        }
+        .back-button {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: white;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        .screen-content {
+            padding: 1.5rem;
+            height: calc(100% - 60px);
+            overflow-y: auto;
+        }
+        .button {
+            background-color: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 5px;
+            font-weight: bold;
+            margin: 0.5rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            display: inline-block;
+            text-align: center;
+        }
+        .button:hover {
+            background-color: #ff5252;
+        }
+        .button.secondary {
+            background-color: #4ecdc4;
+        }
+        .button.secondary:hover {
+            background-color: #3dbeb6;
+        }
+        .input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 16px;
+            margin-bottom: 15px;
+            box-sizing: border-box;
+            text-align: center;
+            letter-spacing: 5px;
+        }
+        .card {
+            background-color: white;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+            position: absolute;
+            width: 90%;
+            height: 70%;
+            left: 5%;
+            top: 15%;
+        }
+        .card-image {
+            height: 70%;
+            background-size: cover;
+            background-position: center;
+        }
+        .card-content {
+            padding: 15px;
+        }
+        .card-title {
+            font-weight: bold;
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+        .card-details {
+            color: #666;
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+        .card-description {
+            font-size: 14px;
+            color: #333;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .swipe-buttons {
+            position: absolute;
+            bottom: 20px;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-around;
+        }
+        .match-card {
+            background-color: white;
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        .match-pair {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .match-item {
+            width: 45%;
+            text-align: center;
+        }
+        .match-item img {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 5px;
+        }
+        .match-plus {
+            font-size: 24px;
+            margin: 0 10px;
+            color: #ff6b6b;
+        }
+        .hidden {
+            display: none;
+        }
+        .logo-container {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .logo {
+            width: 100px;
+            height: 100px;
+            background-color: #ff6b6b;
+            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 40px;
+            font-weight: bold;
+        }
+        .center-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            text-align: center;
+            padding: 0 20px;
+        }
+        .session-code {
+            font-size: 24px;
+            font-weight: bold;
+            letter-spacing: 5px;
+            margin: 20px 0;
+            padding: 10px;
+            background-color: #f1f1f1;
+            border-radius: 5px;
+        }
+        .loading {
+            text-align: center;
+            padding: 50px 20px;
+        }
+        .loading-spinner {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #ff6b6b;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .top-match {
+            background-color: #fff9f9;
+            border: 2px solid #ff6b6b;
+            position: relative;
+            padding-top: 30px;
+        }
+        .top-match-label {
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #ff6b6b;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 15px;
+            font-weight: bold;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Match & Munch</h1>
+        <p class="tagline">Interactive App Preview</p>
+    </header>
+
+    <div class="container">
+        <div class="phone-container">
+            <!-- Home Screen -->
+            <div id="home-screen" class="screen">
+                <div class="screen-header">Match & Munch</div>
+                <div class="screen-content center-content">
+                    <div class="logo-container">
+                        <div class="logo">M&M</div>
+                    </div>
+                    <h2>Match & Munch</h2>
+                    <p>Find the perfect movie and food combo!</p>
+                    <div style="margin-top: 30px;">
+                        <div class="button" onclick="showCreateSession()">Create a Session</div>
+                        <div class="button secondary" onclick="showJoinSession()">Join a Session</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Create Session Screen -->
+            <div id="create-session-screen" class="screen" style="transform: translateX(100%);">
+                <div class="screen-header">
+                    <span class="back-button" onclick="showScreen('home-screen')">Back</span>
+                    Create Session
+                </div>
+                <div class="screen-content center-content">
+                    <div class="loading">
+                        <div class="loading-spinner"></div>
+                        <p>Creating your session...</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Session Created Screen -->
+            <div id="session-created-screen" class="screen" style="transform: translateX(100%);">
+                <div class="screen-header">
+                    <span class="back-button" onclick="showScreen('home-screen')">Back</span>
+                    Session Created
+                </div>
+                <div class="screen-content center-content">
+                    <h3>Your Session Code:</h3>
+                    <div class="session-code">ABC123</div>
+                    <p>Share this code with your friend to start matching!</p>
+                    <div class="button" onclick="startSwiping('movies')">Start Swiping</div>
+                </div>
+            </div>
+
+            <!-- Join Session Screen -->
+            <div id="join-session-screen" class="screen" style="transform: translateX(100%);">
+                <div class="screen-header">
+                    <span class="back-button" onclick="showScreen('home-screen')">Back</span>
+                    Join Session
+                </div>
+                <div class="screen-content center-content">
+                    <h3>Enter 6-character session code:</h3>
+                    <input type="text" class="input" maxlength="6" placeholder="ABC123">
+                    <div class="button" onclick="startSwiping('movies')">Join Session</div>
+                </div>
+            </div>
+
+            <!-- Movie Swipe Screen -->
+            <div id="movie-swipe-screen" class="screen" style="transform: translateX(100%);">
+                <div class="screen-header">
+                    <span class="back-button" onclick="showScreen('home-screen')">Back</span>
+                    Movies (1/10)
+                </div>
+                <div class="screen-content">
+                    <p style="text-align: center; margin-bottom: 0;">Swipe right if you like it, left if you don't</p>
+                    
+                    <div class="card">
+                        <div class="card-image" style="background-image: url('https://image.tmdb.org/t/p/w500/r7vmZjiyZw9rpJMQJdXpjgiCOk9.jpg');"></div>
+                        <div class="card-content">
+                            <div class="card-title">Inception</div>
+                            <div class="card-details">⭐ 8.8 | 2010</div>
+                            <div class="card-description">A thief who steals corporate secrets through the use of dream-sharing technology is given the inverse task of planting an idea into the mind of a C.E.O.</div>
+                        </div>
+                    </div>
+                    
+                    <div class="swipe-buttons">
+                        <div class="button" onclick="nextCard('movies')">NOPE</div>
+                        <div class="button secondary" onclick="nextCard('movies')">LIKE</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Food Swipe Screen -->
+            <div id="food-swipe-screen" class="screen" style="transform: translateX(100%);">
+                <div class="screen-header">
+                    <span class="back-button" onclick="showScreen('movie-swipe-screen')">Back</span>
+                    Foods (1/10)
+                </div>
+                <div class="screen-content">
+                    <p style="text-align: center; margin-bottom: 0;">Swipe right if you like it, left if you don't</p>
+                    
+                    <div class="card">
+                        <div class="card-image" style="background-image: url('https://images.unsplash.com/photo-1574071318508-1cdbab80d002?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60');"></div>
+                        <div class="card-content">
+                            <div class="card-title">Margherita Pizza</div>
+                            <div class="card-details">⏱️ 30 min | 👥 Serves 2</div>
+                            <div class="card-description">Classic Italian pizza with tomato sauce, mozzarella, and basil.</div>
+                        </div>
+                    </div>
+                    
+                    <div class="swipe-buttons">
+                        <div class="button" onclick="nextCard('foods')">NOPE</div>
+                        <div class="button secondary" onclick="nextCard('foods')">LIKE</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Waiting Screen -->
+            <div id="waiting-screen" class="screen" style="transform: translateX(100%);">
+                <div class="screen-header">Waiting for Partner</div>
+                <div class="screen-content center-content">
+                    <div class="loading-spinner"></div>
+                    <h3>Waiting for your partner to finish swiping...</h3>
+                    <p>Session Code: ABC123</p>
+                </div>
+            </div>
+
+            <!-- Results Screen -->
+            <div id="results-screen" class="screen" style="transform: translateX(100%);">
+                <div class="screen-header">
+                    <span class="back-button" onclick="showScreen('home-screen')">Back</span>
+                    Your Matches
+                </div>
+                <div class="screen-content">
+                    <h3>Your Perfect Match & Munch Combos!</h3>
+                    
+                    <div class="match-card top-match">
+                        <div class="top-match-label">TOP MATCH</div>
+                        <div class="match-pair">
+                            <div class="match-item">
+                                <img src="https://image.tmdb.org/t/p/w500/r7vmZjiyZw9rpJMQJdXpjgiCOk9.jpg" alt="Inception">
+                                <p>Inception</p>
+                            </div>
+                            <div class="match-plus">+</div>
+                            <div class="match-item">
+                                <img src="https://images.unsplash.com/photo-1574071318508-1cdbab80d002?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" alt="Pizza">
+                                <p>Margherita Pizza</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <h4>Other Great Combinations</h4>
+                    
+                    <div class="match-card">
+                        <div class="match-pair">
+                            <div class="match-item">
+                                <img src="https://image.tmdb.org/t/p/w500/q6y0Go1tsGEsmtFryDOJo3dEmqu.jpg" alt="The Shawshank Redemption">
+                                <p>The Shawshank Redemption</p>
+                            </div>
+                            <div class="match-plus">+</div>
+                            <div class="match-item">
+                                <img src="https://images.unsplash.com/photo-1565557623262-b51c2513a641?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" alt="Chicken Tikka Masala">
+                                <p>Chicken Tikka Masala</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="match-card">
+                        <div class="match-pair">
+                            <div class="match-item">
+                                <img src="https://image.tmdb.org/t/p/w500/3bhkrj58Vtu7enYsRolD1fZdja1.jpg" alt="The Dark Knight">
+                                <p>The Dark Knight</p>
+                            </div>
+                            <div class="match-plus">+</div>
+                            <div class="match-item">
+                                <img src="https://images.unsplash.com/photo-1568901346375-23c9450c58cd?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60" alt="Beef Burger">
+                                <p>Beef Burger</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div style="text-align: center; margin-top: 20px;">
+                        <div class="button secondary">Share Results</div>
+                        <div class="button" onclick="showScreen('home-screen')">New Session</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div style="text-align: center; margin-top: 30px;">
+            <h2>Interactive Demo Instructions</h2>
+            <p>Click through the app screens to experience the Match & Munch flow:</p>
+            <ol style="text-align: left; max-width: 500px; margin: 0 auto;">
+                <li>Start by creating or joining a session</li>
+                <li>Swipe through movie options</li>
+                <li>Swipe through food options</li>
+                <li>View your matches</li>
+            </ol>
+        </div>
+    </div>
+
+    <script>
+        // Navigation functions
+        function showScreen(screenId) {
+            // Hide all screens
+            document.querySelectorAll('.screen').forEach(screen => {
+                screen.style.transform = 'translateX(100%)';
+            });
+            
+            // Show the selected screen
+            document.getElementById(screenId).style.transform = 'translateX(0)';
+        }
+        
+        // Create session flow
+        function showCreateSession() {
+            showScreen('create-session-screen');
+            
+            // Simulate loading
+            setTimeout(() => {
+                showScreen('session-created-screen');
+            }, 1500);
+        }
+        
+        // Join session flow
+        function showJoinSession() {
+            showScreen('join-session-screen');
+        }
+        
+        // Start swiping flow
+        function startSwiping(category) {
+            if (category === 'movies') {
+                showScreen('movie-swipe-screen');
+            } else {
+                showScreen('food-swipe-screen');
+            }
+        }
+        
+        // Card counter
+        let movieCounter = 1;
+        let foodCounter = 1;
+        
+        // Next card function
+        function nextCard(category) {
+            if (category === 'movies') {
+                movieCounter++;
+                
+                if (movieCounter > 10) {
+                    // Move to food swiping
+                    showScreen('food-swipe-screen');
+                } else {
+                    // Update counter in header
+                    document.querySelector('#movie-swipe-screen .screen-header').innerHTML = 
+                        `<span class="back-button" onclick="showScreen('home-screen')">Back</span>Movies (${movieCounter}/10)`;
+                }
+            } else {
+                foodCounter++;
+                
+                if (foodCounter > 10) {
+                    // Show waiting screen
+                    showScreen('waiting-screen');
+                    
+                    // Simulate waiting for partner
+                    setTimeout(() => {
+                        showScreen('results-screen');
+                    }, 2000);
+                } else {
+                    // Update counter in header
+                    document.querySelector('#food-swipe-screen .screen-header').innerHTML = 
+                        `<span class="back-button" onclick="showScreen('movie-swipe-screen')">Back</span>Foods (${foodCounter}/10)`;
+                }
+            }
+        }
+    </script>
+</body>
+</html>

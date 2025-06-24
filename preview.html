@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Match & Munch - App Preview</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8f8f8;
+            color: #333;
+        }
+        header {
+            background-color: #ff6b6b;
+            color: white;
+            text-align: center;
+            padding: 2rem 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        h1 {
+            margin: 0;
+            font-size: 2.5rem;
+        }
+        .tagline {
+            font-style: italic;
+            margin-top: 0.5rem;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        .app-preview {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-around;
+            margin-top: 2rem;
+        }
+        .screen {
+            background-color: white;
+            border-radius: 20px;
+            overflow: hidden;
+            margin: 1rem;
+            width: 300px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+        .screen:hover {
+            transform: translateY(-10px);
+        }
+        .screen-header {
+            background-color: #ff6b6b;
+            color: white;
+            padding: 1rem;
+            text-align: center;
+            font-weight: bold;
+        }
+        .screen-content {
+            padding: 1.5rem;
+            min-height: 400px;
+        }
+        .feature-list {
+            margin-top: 3rem;
+        }
+        .feature {
+            background-color: white;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .feature h3 {
+            color: #ff6b6b;
+            margin-top: 0;
+        }
+        .tech-stack {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin: 2rem 0;
+        }
+        .tech {
+            background-color: #4ecdc4;
+            color: white;
+            padding: 0.5rem 1rem;
+            margin: 0.5rem;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+        .button {
+            background-color: #ff6b6b;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 5px;
+            font-weight: bold;
+            margin: 0.5rem;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+        .button:hover {
+            background-color: #ff5252;
+        }
+        .button.secondary {
+            background-color: #4ecdc4;
+        }
+        .button.secondary:hover {
+            background-color: #3dbeb6;
+        }
+        .card {
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            background-color: #fff;
+        }
+        .card-title {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        .card-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 1rem;
+        }
+        .swipe-buttons {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 1rem;
+        }
+        .match-result {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 1rem;
+        }
+        .match-item {
+            text-align: center;
+            margin: 0 1rem;
+        }
+        .match-plus {
+            font-size: 2rem;
+            color: #ff6b6b;
+        }
+        footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 2rem;
+            margin-top: 3rem;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Match & Munch</h1>
+        <p class="tagline">Find your perfect movie and food combo!</p>
+    </header>
+
+    <div class="container">
+        <div class="tech-stack">
+            <div class="tech">React Native</div>
+            <div class="tech">Expo</div>
+            <div class="tech">Firebase</div>
+            <div class="tech">TMDB API</div>
+            <div class="tech">Spoonacular API</div>
+        </div>
+
+        <div class="app-preview">
+            <!-- Home Screen -->
+            <div class="screen">
+                <div class="screen-header">Home Screen</div>
+                <div class="screen-content">
+                    <h3 style="text-align: center;">Match & Munch</h3>
+                    <p style="text-align: center;">Find the perfect movie and food combo!</p>
+                    <div style="margin-top: 2rem; text-align: center;">
+                        <button class="button">Create a Session</button>
+                        <button class="button secondary" style="margin-top: 1rem;">Join a Session</button>
+                    </div>
+                    <div style="margin-top: 2rem; text-align: center;">
+                        <p>Enter 6-character session code:</p>
+                        <div style="background-color: #f1f1f1; padding: 0.5rem; border-radius: 5px; margin: 0.5rem 0;">
+                            <strong>ABC123</strong>
+                        </div>
+                        <button class="button">Join Session</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Swipe Screen -->
+            <div class="screen">
+                <div class="screen-header">Swipe Screen</div>
+                <div class="screen-content">
+                    <p style="text-align: center;">Phase: Movies (3/20)</p>
+                    <div class="card" style="height: 250px; display: flex; flex-direction: column; justify-content: space-between;">
+                        <div>
+                            <div class="card-title">Inception</div>
+                            <p>A thief who steals corporate secrets through the use of dream-sharing technology...</p>
+                        </div>
+                        <div>
+                            <p>⭐ 8.8 | 2010</p>
+                        </div>
+                    </div>
+                    <div class="swipe-buttons">
+                        <button class="button">NOPE</button>
+                        <button class="button secondary">LIKE</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Results Screen -->
+            <div class="screen">
+                <div class="screen-header">Results Screen</div>
+                <div class="screen-content">
+                    <h3 style="text-align: center;">Your Perfect Match & Munch Combos!</h3>
+                    <div class="card" style="background-color: #fff9f9;">
+                        <p style="text-align: center; background-color: #ff6b6b; color: white; padding: 0.25rem; border-radius: 10px;">TOP MATCH</p>
+                        <div class="match-result">
+                            <div class="match-item">Inception</div>
+                            <div class="match-plus">+</div>
+                            <div class="match-item">Pizza Margherita</div>
+                        </div>
+                    </div>
+                    <h4>Other Great Combinations</h4>
+                    <div class="card">
+                        <div class="match-result">
+                            <div class="match-item">The Godfather</div>
+                            <div class="match-plus">+</div>
+                            <div class="match-item">Spaghetti Carbonara</div>
+                        </div>
+                    </div>
+                    <div style="text-align: center; margin-top: 2rem;">
+                        <button class="button secondary">Share Results</button>
+                        <button class="button" style="margin-top: 0.5rem;">New Session</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="feature-list">
+            <h2>Key Features</h2>
+            <div class="feature">
+                <h3>🔐 Authentication</h3>
+                <p>Anonymous sign-in using Firebase Auth for quick and easy access.</p>
+            </div>
+            <div class="feature">
+                <h3>🔄 Session Matching</h3>
+                <p>Create or join a session with a unique 6-character code to connect with a friend.</p>
+            </div>
+            <div class="feature">
+                <h3>👆 Swipe Interface</h3>
+                <p>Swipe right for movies and foods you like, left for those you don't - just like Tinder!</p>
+            </div>
+            <div class="feature">
+                <h3>🔍 Match Logic</h3>
+                <p>Smart algorithm finds overlapping "yes" responses between both users.</p>
+            </div>
+            <div class="feature">
+                <h3>🎉 Results Screen</h3>
+                <p>Beautiful display of all matched movie and food combinations.</p>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <p>Match & Munch - A React Native App</p>
+        <p>Created with ❤️ using React Native, Expo, Firebase, and public APIs</p>
+    </footer>
+</body>
+</html>
