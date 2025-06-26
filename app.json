@@ -1,0 +1,19 @@
+{
+  "expo": {
+    "name": "match-and-munch",
+    "slug": "match-and-munch",
+    "version": "1.0.0",
+    "sdkVersion": "48.0.0",
+    "platforms": [
+      "ios",
+      "android",
+      "web"
+    ],
+    "ios": {
+      "bundleIdentifier": "com.anonymous.match-and-munch"
+    },
+    "web": {
+      "bundler": "metro"
+    }
+  }
+}
