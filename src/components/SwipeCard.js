@@ -1,5 +1,6 @@
 import React from 'react';
 import { View, Text, Image, StyleSheet, Dimensions } from 'react-native';
+import { colors } from '../styles/theme';
 
 const { width, height } = Dimensions.get('window');
 
@@ -59,7 +60,7 @@ const styles = StyleSheet.create({
     width: width * 0.9,
     height: height * 0.7,
     borderRadius: 20,
-    backgroundColor: 'white',
+    backgroundColor: colors.cardBackground,
     shadowColor: '#000',
     shadowOffset: {
       width: 0,
@@ -85,6 +86,7 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: 'bold',
     marginBottom: 5,
+    color: colors.secondaryText,
   },
   detailsContainer: {
     flexDirection: 'row',
@@ -92,7 +94,7 @@ const styles = StyleSheet.create({
   },
   releaseDate: {
     fontSize: 16,
-    color: '#666',
+    color: colors.secondaryText,
     marginRight: 10,
   },
   ratingContainer: {
@@ -101,20 +103,20 @@ const styles = StyleSheet.create({
   },
   rating: {
     fontSize: 16,
-    color: '#666',
+    color: colors.secondaryText,
   },
   cookTime: {
     fontSize: 16,
-    color: '#666',
+    color: colors.secondaryText,
     marginRight: 10,
   },
   servings: {
     fontSize: 16,
-    color: '#666',
+    color: colors.secondaryText,
   },
   description: {
     fontSize: 14,
-    color: '#444',
+    color: colors.secondaryText,
     lineHeight: 20,
   },
   overlayContainer: {
@@ -134,19 +136,19 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   likeOverlay: {
-    backgroundColor: 'rgba(0, 200, 0, 0.4)',
+    backgroundColor: 'rgba(78, 205, 196, 0.4)', // likeButton color with alpha
     transform: [{ rotate: '-30deg' }],
   },
   nopeOverlay: {
-    backgroundColor: 'rgba(255, 0, 0, 0.4)',
+    backgroundColor: 'rgba(255, 107, 107, 0.4)', // nopeButton color with alpha
     transform: [{ rotate: '30deg' }],
   },
   overlayText: {
     fontSize: 80,
     fontWeight: 'bold',
-    color: 'white',
+    color: colors.primaryText,
     borderWidth: 5,
-    borderColor: 'white',
+    borderColor: colors.primaryText,
     padding: 10,
   },
 });

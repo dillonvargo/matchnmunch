@@ -1,16 +1,38 @@
 import axios from 'axios';
 import { SPOONACULAR_API_KEY } from '@env';
 
+// Function to shuffle an array
+const shuffleArray = (array) => {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+  return array;
+};
+
 const BASE_URL = 'https://api.spoonacular.com';
 const IMAGE_BASE_URL = 'https://spoonacular.com/recipeImages/';
 
+// A list of diverse tags to pull recipes from
+const foodTags = [
+  'main course', 'side dish', 'dessert', 'appetizer', 'salad', 'bread', 
+  'breakfast', 'soup', 'beverage', 'sauce', 'marinade', 'fingerfood', 
+  'snack', 'drink', 'vegetarian', 'vegan', 'gluten free', 'ketogenic',
+  'italian', 'mexican', 'indian', 'chinese', 'japanese', 'thai', 'french'
+];
+
 // Get random recipes
-export const getRandomRecipes = async (number = 20) => {
+export const getRandomRecipes = async (number = 20) => { // Increased default and variety
   try {
+    // Pick a few random tags to ensure variety
+    const shuffledTags = foodTags.sort(() => 0.5 - Math.random());
+    const selectedTags = shuffledTags.slice(0, 3).join(',');
+
     const response = await axios.get(`${BASE_URL}/recipes/random`, {
       params: {
         apiKey: SPOONACULAR_API_KEY,
-        number: number
+        number: number,
+        tags: selectedTags,
       }
     });
     
@@ -38,12 +60,15 @@ export const getRecipesByCuisine = async (cuisine, number = 20) => {
       params: {
         apiKey: SPOONACULAR_API_KEY,
         cuisine: cuisine,
-        number: number,
+        number: 100, // Fetch more to randomize from
         addRecipeInformation: true
       }
     });
     
-    return response.data.results.map(recipe => ({
+    const shuffledRecipes = shuffleArray(response.data.results);
+    const selectedRecipes = shuffledRecipes.slice(0, number);
+
+    return selectedRecipes.map(recipe => ({
       id: recipe.id,
       title: recipe.title,
       summary: recipe.summary,
@@ -96,7 +121,7 @@ export const getRecipeDetails = async (recipeId) => {
 
 // Fallback food data in case the API is not available
 export const getFallbackFoodData = () => {
-  return [
+  const fallbackFoods = [
     {
       id: 1001,
       title: 'Margherita Pizza',
@@ -186,6 +211,52 @@ export const getFallbackFoodData = () => {
       readyInMinutes: 15,
       servings: 2,
       healthScore: 85
+    },
+    {
+      id: 1011,
+      title: 'Sushi Platter',
+      summary: 'Assortment of fresh sushi rolls including tuna, salmon, and avocado.',
+      imageUrl: 'https://images.unsplash.com/photo-1579584425555-c3ce17fd4351?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60',
+      readyInMinutes: 45,
+      servings: 2,
+      healthScore: 88
+    },
+    {
+      id: 1012,
+      title: 'Pho Soup',
+      summary: 'Vietnamese noodle soup with a rich broth, beef, and fresh herbs.',
+      imageUrl: 'https://images.unsplash.com/photo-1585331744336-1ae885b37e99?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60',
+      readyInMinutes: 60,
+      servings: 2,
+      healthScore: 82
+    },
+    {
+      id: 1013,
+      title: 'Pad Thai',
+      summary: 'Stir-fried rice noodles with shrimp, tofu, peanuts, and a tangy sauce.',
+      imageUrl: 'https://images.unsplash.com/photo-1569718212165-fb692691e2e1?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60',
+      readyInMinutes: 30,
+      servings: 2,
+      healthScore: 72
+    },
+    {
+      id: 1014,
+      title: 'Avocado Toast',
+      summary: 'Toasted sourdough bread with mashed avocado, lemon, and red pepper flakes.',
+      imageUrl: 'https://images.unsplash.com/photo-1482049016688-2d3e1b311543?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60',
+      readyInMinutes: 10,
+      servings: 1,
+      healthScore: 92
+    },
+    {
+      id: 1015,
+      title: 'French Onion Soup',
+      summary: 'A savory soup made with caramelized onions and beef broth, topped with melted cheese.',
+      imageUrl: 'https://images.unsplash.com/photo-1543262633-e1b947a72d3a?ixlib=rb-1.2.1&auto=format&fit=crop&w=500&q=60',
+      readyInMinutes: 50,
+      servings: 4,
+      healthScore: 60
     }
   ];
+  return shuffleArray(fallbackFoods).slice(0, 20);
 };

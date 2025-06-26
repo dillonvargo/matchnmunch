@@ -66,7 +66,7 @@ export const createSession = async (userId) => {
     
     console.log('Created mock session with code:', code);
     
-    // Store session in memory/localStorage for demo purposes
+    // Store session in memory for demo purposes
     const sessionData = {
       createdAt: new Date().toISOString(),
       createdBy: userId,
@@ -75,20 +75,32 @@ export const createSession = async (userId) => {
       currentPhase: 'movies'
     };
     
-    // Safely use localStorage if available
+    // Global variable as backup if localStorage fails
+    if (typeof window !== 'undefined') {
+      if (!window.matchMunchSessions) {
+        window.matchMunchSessions = {};
+      }
+      
+      // Store in our backup object
+      window.matchMunchSessions[`session_${code}`] = sessionData;
+    }
+    
+    // Try localStorage but don't require it
     try {
       if (typeof localStorage !== 'undefined') {
         localStorage.setItem(`session_${code}`, JSON.stringify(sessionData));
+        console.log('Session saved to localStorage');
       }
     } catch (storageError) {
       console.warn('LocalStorage not available:', storageError);
-      // Continue without localStorage - we'll just use the code
+      // Continue with in-memory storage
     }
     
     return code;
   } catch (error) {
     console.error('Error creating session:', error);
-    throw error;
+    // Return a fallback code rather than throwing
+    return Math.random().toString(36).substring(2, 8).toUpperCase();
   }
 };
 

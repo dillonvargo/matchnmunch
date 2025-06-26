@@ -1,0 +1,29 @@
+[build]
+  command = "npm run build:web"
+  publish = "web-build"
+  functions = "functions"
+
+[build.environment]
+  NODE_VERSION = "16"
+  NPM_VERSION = "8"
+
+[dev]
+  command = "npm start"
+  port = 19006
+  publish = "web-build"
+  targetPort = 19006
+
+# Handle client-side routing
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Required for Single Page Applications (SPA)
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    X-XSS-Protection = "1; mode=block"
+    Referrer-Policy = "strict-origin-when-cross-origin"

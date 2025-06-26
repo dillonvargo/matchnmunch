@@ -1,8 +1,11 @@
-import React from 'react';
+import React, { useRef, useEffect } from 'react';
+
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import { StatusBar } from 'expo-status-bar';
-import { LogBox } from 'react-native';
+import { LogBox, Platform } from 'react-native';
+// Import web patch for button fix
+import { applyWebPatches } from './src/webPatch';
 
 // Import screens
 import HomeScreen from './src/screens/HomeScreen';
@@ -21,8 +24,35 @@ LogBox.ignoreLogs([
 const Stack = createStackNavigator();
 
 export default function App() {
+
+
+  // Create a navigation reference we can use throughout the app
+  const navigationRef = useRef();
+  
+  // Apply web-specific patches on web platform
+  useEffect(() => {
+    // Only run on web platform
+    if (Platform.OS === 'web') {
+      console.log('Running on web, applying patches...');
+      applyWebPatches();
+    }
+  }, []);
+  
+  // Store the navigation reference in the window object for access from anywhere
+  if (typeof window !== 'undefined') {
+    window.matchAndMunchNavigation = navigationRef.current;
+  }
+  
   return (
-    <NavigationContainer>
+    <NavigationContainer
+      ref={(navigation) => {
+        navigationRef.current = navigation;
+        if (typeof window !== 'undefined') {
+          // Make navigation globally available
+          window.matchAndMunchNavigation = navigation;
+        }
+      }}
+    >
       <Stack.Navigator initialRouteName="Home">
         <Stack.Screen 
           name="Home" 

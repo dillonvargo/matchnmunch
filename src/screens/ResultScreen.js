@@ -13,6 +13,7 @@ import { getMatches } from '../services/firebase';
 import { getMovieDetails } from '../services/tmdb';
 import { getRecipeDetails } from '../services/food';
 import MatchResults from '../components/MatchResults';
+import { colors, BackgroundPattern } from '../styles/theme';
 
 const ResultScreen = ({ navigation, route }) => {
   const { sessionCode } = route.params;
@@ -89,7 +90,8 @@ const ResultScreen = ({ navigation, route }) => {
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#ff6b6b" />
+        <BackgroundPattern />
+        <ActivityIndicator size="large" color={colors.primaryButton} />
         <Text style={styles.loadingText}>Finding your matches...</Text>
       </View>
     );
@@ -98,6 +100,7 @@ const ResultScreen = ({ navigation, route }) => {
   if (error) {
     return (
       <View style={styles.errorContainer}>
+        <BackgroundPattern />
         <Text style={styles.errorText}>{error}</Text>
         <TouchableOpacity 
           style={styles.retryButton}
@@ -111,6 +114,7 @@ const ResultScreen = ({ navigation, route }) => {
 
   return (
     <View style={styles.container}>
+      <BackgroundPattern />
       <StatusBar style="auto" />
       
       <MatchResults 
@@ -141,39 +145,41 @@ const ResultScreen = ({ navigation, route }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: colors.background,
   },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
+    backgroundColor: colors.background,
   },
   loadingText: {
     marginTop: 10,
     fontSize: 16,
-    color: '#666',
+    color: colors.primaryText,
   },
   errorContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
     padding: 20,
+    backgroundColor: colors.background,
   },
   errorText: {
     fontSize: 18,
-    color: '#ff6b6b',
+    color: colors.error,
     textAlign: 'center',
     marginBottom: 20,
   },
   retryButton: {
-    backgroundColor: '#ff6b6b',
+    backgroundColor: colors.error,
     paddingHorizontal: 30,
     paddingVertical: 12,
     borderRadius: 10,
   },
   retryButtonText: {
-    color: 'white',
+    color: colors.buttonText,
     fontSize: 16,
     fontWeight: 'bold',
   },
@@ -183,10 +189,11 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     paddingHorizontal: 20,
     borderTopWidth: 1,
-    borderTopColor: '#eee',
+    borderTopColor: colors.borderColor,
+    backgroundColor: colors.background, // To match the rest of the screen
   },
   shareButton: {
-    backgroundColor: '#4ecdc4',
+    backgroundColor: colors.likeButton,
     paddingHorizontal: 20,
     paddingVertical: 12,
     borderRadius: 10,
@@ -194,7 +201,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   newSessionButton: {
-    backgroundColor: '#ff6b6b',
+    backgroundColor: colors.primaryButton,
     paddingHorizontal: 20,
     paddingVertical: 12,
     borderRadius: 10,
@@ -202,7 +209,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   buttonText: {
-    color: 'white',
+    color: colors.buttonText,
     fontSize: 16,
     fontWeight: 'bold',
   },

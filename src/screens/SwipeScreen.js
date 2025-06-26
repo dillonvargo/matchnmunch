@@ -6,14 +6,17 @@ import {
   ActivityIndicator,
   TouchableOpacity,
   Alert,
-  Dimensions
+  Dimensions,
+  Image,
+  Animated
 } from 'react-native';
 import Swiper from 'react-native-deck-swiper';
 import { StatusBar } from 'expo-status-bar';
 import { auth, saveSwipeResponse, checkCategoryCompletion } from '../services/firebase';
-import { getPopularMovies } from '../services/tmdb';
+import { getTopRatedMovies } from '../services/tmdb';
 import { getRandomRecipes } from '../services/food';
 import SwipeCard from '../components/SwipeCard';
+import { colors, BackgroundPattern } from '../styles/theme';
 
 const { width, height } = Dimensions.get('window');
 
@@ -25,6 +28,7 @@ const SwipeScreen = ({ navigation, route }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isWaiting, setIsWaiting] = useState(false);
   const [partnerReady, setPartnerReady] = useState(false);
+  const [error, setError] = useState(null);
   const swiperRef = useRef(null);
 
   // Load data when component mounts
@@ -34,14 +38,15 @@ const SwipeScreen = ({ navigation, route }) => {
 
   // Load appropriate data based on the current phase
   const loadData = async () => {
+    setError(null); // Reset error state on new load attempt
     try {
       setLoading(true);
       
       if (phase === 'movies') {
-        const movies = await getPopularMovies(1);
-        setItems(movies.slice(0, 20)); // Limit to 20 movies
+        const movies = await getTopRatedMovies(); // Fetches multiple pages by default
+        setItems(movies);
       } else {
-        const foods = await getRandomRecipes(20);
+        const foods = await getRandomRecipes(); // Fetches a larger, more varied list by default
         setItems(foods);
       }
       
@@ -49,7 +54,7 @@ const SwipeScreen = ({ navigation, route }) => {
       setLoading(false);
     } catch (error) {
       console.error(`Error loading ${phase}:`, error);
-      Alert.alert('Error', `Failed to load ${phase}. Please try again.`);
+      setError(`Failed to load ${phase}. Please try again.`);
       setLoading(false);
     }
   };
@@ -149,7 +154,7 @@ const SwipeScreen = ({ navigation, route }) => {
   // Render waiting screen
   const renderWaitingScreen = () => (
     <View style={styles.waitingContainer}>
-      <ActivityIndicator size="large" color="#ff6b6b" />
+      <ActivityIndicator size="large" color={colors.primaryButton} />
       <Text style={styles.waitingText}>
         Waiting for your partner to finish swiping...
       </Text>
@@ -183,42 +188,50 @@ const SwipeScreen = ({ navigation, route }) => {
     </View>
   );
 
-  // If waiting for partner, show waiting screen
-  if (isWaiting) {
-    return partnerReady ? renderPartnerReadyScreen() : renderWaitingScreen();
-  }
+  // Render error screen
+  const renderErrorScreen = () => (
+    <View style={styles.loadingContainer}>
+      <Text style={styles.errorText}>{error}</Text>
+      <TouchableOpacity style={styles.retryButton} onPress={() => loadData()}>
+        <Text style={styles.retryButtonText}>Retry</Text>
+      </TouchableOpacity>
+    </View>
+  );
 
   return (
     <View style={styles.container}>
-      <StatusBar style="auto" />
-      
-      <View style={styles.headerContainer}>
-        <Text style={styles.phaseText}>
-          Phase: {phase === 'movies' ? 'Movies' : 'Foods'} ({currentIndex + 1}/{items.length})
-        </Text>
-        <Text style={styles.sessionText}>
-          Session: {sessionCode}
-        </Text>
-      </View>
+      <BackgroundPattern />
+      <StatusBar style="dark" />
       
       {loading ? (
         <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color="#ff6b6b" />
+          <ActivityIndicator size="large" color={colors.primaryButton} />
           <Text style={styles.loadingText}>Loading {phase}...</Text>
         </View>
+      ) : error ? (
+        renderErrorScreen()
+      ) : isWaiting ? (
+        partnerReady ? renderPartnerReadyScreen() : renderWaitingScreen()
       ) : (
         <>
+          <View style={styles.headerContainer}>
+            <Text style={styles.phaseText}>
+              {phase === 'movies' ? 'Phase 1: Movies' : 'Phase 2: Foods'}
+            </Text>
+            <Text style={styles.sessionText}>Session: {sessionCode}</Text>
+          </View>
+
           <View style={styles.instructionContainer}>
             <Text style={styles.instructionText}>
-              Swipe right if you like it, left if you don't
+              Swipe right for 'LIKE', left for 'NOPE'
             </Text>
           </View>
-          
+
           <View style={styles.swiperContainer}>
             <Swiper
               ref={swiperRef}
               cards={items}
-              renderCard={(item) => <SwipeCard item={item} type={phase === 'movies' ? 'movie' : 'food'} />}
+              renderCard={(card) => <SwipeCard item={card} type={phase === 'movies' ? 'movie' : 'food'} />}
               onSwiped={(cardIndex) => setCurrentIndex(cardIndex + 1)}
               onSwipedLeft={(cardIndex) => handleSwipe('left', cardIndex)}
               onSwipedRight={(cardIndex) => handleSwipe('right', cardIndex)}
@@ -236,7 +249,7 @@ const SwipeScreen = ({ navigation, route }) => {
                   title: 'NOPE',
                   style: {
                     label: {
-                      backgroundColor: 'red',
+                      backgroundColor: colors.nopeButton,
                       color: 'white',
                       fontSize: 24,
                       borderRadius: 10,
@@ -255,7 +268,7 @@ const SwipeScreen = ({ navigation, route }) => {
                   title: 'LIKE',
                   style: {
                     label: {
-                      backgroundColor: 'green',
+                      backgroundColor: colors.likeButton,
                       color: 'white',
                       fontSize: 24,
                       borderRadius: 10,
@@ -298,7 +311,7 @@ const SwipeScreen = ({ navigation, route }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f8f8f8',
+    backgroundColor: colors.background,
   },
   headerContainer: {
     flexDirection: 'row',
@@ -311,11 +324,11 @@ const styles = StyleSheet.create({
   phaseText: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#333',
+    color: colors.primaryText,
   },
   sessionText: {
     fontSize: 14,
-    color: '#666',
+    color: colors.secondaryText,
   },
   instructionContainer: {
     alignItems: 'center',
@@ -323,18 +336,19 @@ const styles = StyleSheet.create({
   },
   instructionText: {
     fontSize: 16,
-    color: '#666',
+    color: colors.secondaryText,
     fontStyle: 'italic',
   },
   loadingContainer: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+    backgroundColor: colors.background,
   },
   loadingText: {
     marginTop: 10,
     fontSize: 16,
-    color: '#666',
+    color: colors.secondaryText,
   },
   swiperContainer: {
     flex: 1,
@@ -358,13 +372,13 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   nopeButton: {
-    backgroundColor: '#ff6b6b',
+    backgroundColor: colors.nopeButton,
   },
   likeButton: {
-    backgroundColor: '#4ecdc4',
+    backgroundColor: colors.likeButton,
   },
   buttonText: {
-    color: 'white',
+    color: colors.buttonText,
     fontSize: 16,
     fontWeight: 'bold',
   },
@@ -380,11 +394,11 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 20,
     marginBottom: 10,
-    color: '#333',
+    color: colors.primaryText,
   },
   sessionCodeText: {
     fontSize: 16,
-    color: '#666',
+    color: colors.secondaryText,
     marginTop: 10,
   },
   readyText: {
@@ -392,18 +406,34 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     textAlign: 'center',
     marginBottom: 20,
-    color: '#333',
+    color: colors.primaryText,
   },
   continueButton: {
-    backgroundColor: '#ff6b6b',
+    backgroundColor: colors.primaryButton,
+    paddingHorizontal: 30,
+    paddingVertical: 15,
+    borderRadius: 10,
+  },
+  continueButtonText: {
+    color: colors.buttonText,
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  errorText: {
+    fontSize: 18,
+    color: colors.error,
+    textAlign: 'center',
+    marginBottom: 20,
+  },
+  retryButton: {
+    backgroundColor: colors.error,
     paddingHorizontal: 20,
     paddingVertical: 12,
     borderRadius: 10,
-    marginTop: 20,
   },
-  continueButtonText: {
-    color: 'white',
-    fontSize: 18,
+  retryButtonText: {
+    color: colors.buttonText,
+    fontSize: 16,
     fontWeight: 'bold',
   },
 });
